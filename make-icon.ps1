@@ -25,6 +25,11 @@ function Render([int]$s) {
     $box = Rounded (10*$u) (10*$u) (34*$u) (34*$u) (5*$u)
     $g.DrawPath((New-Object Drawing.Pen $blue, ([Math]::Max(1.5, 4*$u))), $box)
 
+    # series letter T inside the box
+    $tb = New-Object Drawing.SolidBrush $blue
+    $g.FillPath($tb, (Rounded (16.5*$u) (16*$u) (17*$u) (5*$u) (1.2*$u)))
+    $g.FillPath($tb, (Rounded (22.5*$u) (16*$u) (5*$u) (19*$u) (1.2*$u)))
+
     # camera overlapping bottom-right corner, with a transparent gap ring
     $bg = [Drawing.Color]::Transparent
     $body = Rounded (27*$u) (33*$u) (30*$u) (21*$u) (5*$u)
