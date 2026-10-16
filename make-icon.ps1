@@ -21,9 +21,8 @@ function Render([int]$s) {
     # transparent background; enlarge glyph to fill the canvas
     $g.TranslateTransform(32*$u, 32*$u); $g.ScaleTransform(1.26, 1.26); $g.TranslateTransform(-32.5*$u, -31.5*$u)
 
-    # selection box (white fill, blue outline)
+    # selection box (outline only)
     $box = Rounded (10*$u) (10*$u) (34*$u) (34*$u) (5*$u)
-    $g.FillPath([Drawing.Brushes]::White, $box)
     $g.DrawPath((New-Object Drawing.Pen $blue, ([Math]::Max(1.5, 4*$u))), $box)
 
     # camera overlapping bottom-right corner, with a transparent gap ring
