@@ -1,4 +1,4 @@
-# Renders tcapture.ico (Tnote series style: pale yellow tile + blue glyph)
+﻿# Renders tcapture.ico (Tnote series style: pale yellow tile + blue glyph)
 Add-Type -AssemblyName System.Drawing
 $out = Join-Path $PSScriptRoot 'tcapture.ico'
 $sizes = 16, 20, 24, 32, 40, 48, 64, 128, 256
@@ -23,29 +23,22 @@ function Render([int]$s) {
     $g.FillPath((New-Object Drawing.SolidBrush ([Drawing.Color]::FromArgb(247, 235, 188))), $tile)
     $g.DrawPath((New-Object Drawing.Pen ([Drawing.Color]::FromArgb(212, 189, 63)), ([Math]::Max(1, 2*$u))), $tile)
 
-    # captured picture (white card, blue outline, mountain + sun)
-    $card = Rounded (19*$u) (21*$u) (26*$u) (22*$u) (3*$u)
-    $g.FillPath([Drawing.Brushes]::White, $card)
-    $g.DrawPath((New-Object Drawing.Pen $blue, ([Math]::Max(1, 2.5*$u))), $card)
-    if ($s -ge 24) {
-        $lb = New-Object Drawing.SolidBrush ([Drawing.Color]::FromArgb(140, 185, 225))
-        $g.FillPolygon($lb, [Drawing.PointF[]]@(
-            (New-Object Drawing.PointF (21.5*$u), (40.5*$u)), (New-Object Drawing.PointF (29*$u), (31*$u)),
-            (New-Object Drawing.PointF (34*$u), (36*$u)), (New-Object Drawing.PointF (37*$u), (33*$u)),
-            (New-Object Drawing.PointF (42.5*$u), (40.5*$u))))
-        $g.FillEllipse((New-Object Drawing.SolidBrush $blue), (36*$u), (25*$u), (5*$u), (5*$u))
-    }
+    # selection box (white fill, blue outline)
+    $box = Rounded (10*$u) (10*$u) (34*$u) (34*$u) (5*$u)
+    $g.FillPath([Drawing.Brushes]::White, $box)
+    $g.DrawPath((New-Object Drawing.Pen $blue, ([Math]::Max(1.5, 4*$u))), $box)
 
-    # selection corner brackets
-    $pen = New-Object Drawing.Pen $blue, ([Math]::Max(1.5, 4*$u))
-    $pen.StartCap = 'Round'; $pen.EndCap = 'Round'; $pen.LineJoin = 'Round'
-    $a = 11*$u; $b = 53*$u; $l = 9*$u
-    foreach ($c in @(@($a,$a,1,1), @($b,$a,-1,1), @($a,$b,1,-1), @($b,$b,-1,-1))) {
-        $x = $c[0]; $y = $c[1]
-        $g.DrawLines($pen, [Drawing.PointF[]]@(
-            (New-Object Drawing.PointF $x, ($y + $c[3]*$l)), (New-Object Drawing.PointF $x, $y),
-            (New-Object Drawing.PointF ($x + $c[2]*$l), $y)))
-    }
+    # camera overlapping bottom-right corner, with a tile-colored gap ring
+    $bg = [Drawing.Color]::FromArgb(247, 235, 188)
+    $body = Rounded (27*$u) (33*$u) (30*$u) (21*$u) (5*$u)
+    $hump = Rounded (33*$u) (28*$u) (11*$u) (8*$u) (2.5*$u)
+    $gap = New-Object Drawing.Pen $bg, ([Math]::Max(1.5, 6*$u)); $gap.LineJoin = 'Round'
+    $g.DrawPath($gap, $hump); $g.DrawPath($gap, $body)
+    $bb = New-Object Drawing.SolidBrush $blue
+    $g.FillPath($bb, $hump); $g.FillPath($bb, $body)
+    $g.FillEllipse([Drawing.Brushes]::White, (35.5*$u), (36.5*$u), (13*$u), (13*$u))
+    $g.FillEllipse($bb, (38.5*$u), (39.5*$u), (7*$u), (7*$u))
+    if ($s -ge 32) { $g.FillEllipse([Drawing.Brushes]::White, (50*$u), (36.5*$u), (3*$u), (3*$u)) }
     $g.Dispose(); $bmp
 }
 
