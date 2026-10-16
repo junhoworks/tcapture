@@ -1,4 +1,4 @@
-﻿# Renders tcapture.ico (Tnote series style: pale yellow tile + blue glyph)
+﻿# Renders tcapture.ico (Tnote series style: blue glyph on transparent background)
 Add-Type -AssemblyName System.Drawing
 $out = Join-Path $PSScriptRoot 'tcapture.ico'
 $sizes = 16, 20, 24, 32, 40, 48, 64, 128, 256
@@ -18,22 +18,20 @@ function Render([int]$s) {
     $u = $s / 64.0
     $blue = [Drawing.Color]::FromArgb(58, 120, 180)
 
-    # tile
-    $tile = Rounded (1*$u) (1*$u) (62*$u) (62*$u) (12*$u)
-    $g.FillPath((New-Object Drawing.SolidBrush ([Drawing.Color]::FromArgb(247, 235, 188))), $tile)
-    $g.DrawPath((New-Object Drawing.Pen ([Drawing.Color]::FromArgb(212, 189, 63)), ([Math]::Max(1, 2*$u))), $tile)
+    # transparent background; enlarge glyph to fill the canvas
+    $g.TranslateTransform(32*$u, 32*$u); $g.ScaleTransform(1.26, 1.26); $g.TranslateTransform(-32.5*$u, -31.5*$u)
 
     # selection box (white fill, blue outline)
     $box = Rounded (10*$u) (10*$u) (34*$u) (34*$u) (5*$u)
     $g.FillPath([Drawing.Brushes]::White, $box)
     $g.DrawPath((New-Object Drawing.Pen $blue, ([Math]::Max(1.5, 4*$u))), $box)
 
-    # camera overlapping bottom-right corner, with a tile-colored gap ring
-    $bg = [Drawing.Color]::FromArgb(247, 235, 188)
+    # camera overlapping bottom-right corner, with a transparent gap ring
+    $bg = [Drawing.Color]::Transparent
     $body = Rounded (27*$u) (33*$u) (30*$u) (21*$u) (5*$u)
     $hump = Rounded (33*$u) (28*$u) (11*$u) (8*$u) (2.5*$u)
     $gap = New-Object Drawing.Pen $bg, ([Math]::Max(1.5, 6*$u)); $gap.LineJoin = 'Round'
-    $g.DrawPath($gap, $hump); $g.DrawPath($gap, $body)
+    $g.CompositingMode = 'SourceCopy'; $g.DrawPath($gap, $hump); $g.DrawPath($gap, $body); $g.CompositingMode = 'SourceOver'
     $bb = New-Object Drawing.SolidBrush $blue
     $g.FillPath($bb, $hump); $g.FillPath($bb, $body)
     $g.FillEllipse([Drawing.Brushes]::White, (35.5*$u), (36.5*$u), (13*$u), (13*$u))
