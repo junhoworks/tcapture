@@ -86,15 +86,7 @@ namespace TCapture
 
         public static Icon MakeIcon()
         {
-            var b = new Bitmap(32, 32);
-            using (var g = Graphics.FromImage(b))
-            {
-                g.SmoothingMode = SmoothingMode.AntiAlias;
-                using (var br = new SolidBrush(Color.FromArgb(0, 120, 212))) g.FillEllipse(br, 1, 1, 30, 30);
-                using (var p = new Pen(Color.White, 3)) { g.DrawLine(p, 9, 9, 23, 23); g.DrawLine(p, 23, 9, 9, 23); }
-                using (var br = new SolidBrush(Color.White)) { g.FillEllipse(br, 5, 19, 8, 8); g.FillEllipse(br, 19, 19, 8, 8); }
-            }
-            return Icon.FromHandle(b.GetHicon());
+            return Icon.ExtractAssociatedIcon(Application.ExecutablePath);
         }
     }
 
